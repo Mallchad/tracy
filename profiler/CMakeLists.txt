@@ -14,7 +14,7 @@ set(BUILD_SHARED_LIBS 0)
 
 set(PROJECT_ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR}
   CACHE STRING "Root directory of project")
-set(PROJECT_BUILD_DIR ${PROJECT_ROOT_DIR}
+set(PROJECT_BUILD_DIR ${CMAKE_BINARY_DIR}
   CACHE STRING "A custom path for the build directory")
 set(PROJECT_EXECUTABLE_DIR "${PROJECT_BUILD_DIR}/bin"
   CACHE STRING "A custom path for the binary output directory")
@@ -204,8 +204,11 @@ else()
 endif()
 
 find_package(Threads REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE TracyServer TracyImGui Threads::Threads)
 # HACK: Upstream dl fix
-target_link_libraries(${PROJECT_NAME} PRIVATE TracyServer TracyImGui Threads::Threads "dl")
+if (UNIX)
+    target_link_libraries(${PROJECT_NAME} PRIVATE "dl")
+endif (UNIX)
 
 if(NOT DEFINED GIT_REV)
     set(GIT_REV "HEAD")
